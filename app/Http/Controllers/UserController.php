@@ -8,12 +8,22 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function register(Request $request){
+    public function register(Request $req){
         $user = new User;
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
-        $user->password = Hash::make($request->input('password'));
+        $user->name = $req->input('name');
+        $user->email = $req->input('email');
+        $user->password = Hash::make($req->input('password'));
         $user->save();
+        return $user;
+    }
+
+    public function login(Request $req){
+        $user = User::where('email',$req->email)->first();
+        if(!$user || !Hash::check($req->password,$user->password)){
+            return response([
+                'error' => ["Email or Password is not matched"]
+            ]);
+        }
         return $user;
     }
 }
